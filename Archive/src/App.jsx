@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import { useDebounce } from 'use-debounce';
 import './App.css'
 import Search from './components/search.jsx'
@@ -28,6 +28,9 @@ const App = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [debouncedSearchTerm] = useDebounce(searchTerm, 1000);
     const [trending, setTrending] = useState([]);
+
+    const searchRef = useRef(null);
+
 
     const fetchMovies = async (query='') => {
         setIsLoading(true);
@@ -62,7 +65,11 @@ const App = () => {
     }
 
     useEffect(() => {
+        if(searchRef.current){
+            searchRef.current.scrollIntoView({behavior: 'smooth'});
+        }
         fetchMovies(debouncedSearchTerm);
+
     }, [debouncedSearchTerm]);
 
     useEffect(() => {
@@ -101,7 +108,7 @@ const App = () => {
 
                 </section>
 
-                <section className="all-movies">
+                <section ref={searchRef} className="all-movies">
                     <h2 className="mt-10">All Movies</h2>
 
                     {isLoading ? ( <ul>{Array.from({ length: 6 }).map((_, i) => (
